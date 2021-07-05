@@ -55,7 +55,30 @@ const computeResults = (payload, externals) => {
 }
 
 const App = () => {
-    const [dccAsText, setDccAsText] = useState(pretty({ var: "" }))
+    const [dccAsText, setDccAsText] = useState(pretty({
+        "ver": "1.3.0",
+        "nam": {
+            "fn": "Musterfrau-Gößinger",
+            "fnt": "MUSTERFRAU<GOESSINGER",
+            "gn": "Gabriele",
+            "gnt": "GABRIELE"
+        },
+        "dob": "1998-02-26",
+        "v": [
+            {
+                "tg": "840539006",
+                "vp": "1119349007",
+                "mp": "EU/1/20/1528",
+                "ma": "ORG-100030215",
+                "dn": 1,
+                "sd": 2,
+                "dt": "2021-02-18",
+                "co": "AT",
+                "is": "Ministry of Health, Austria",
+                "ci": "URN:UVCI:01:AT:10807843F94AEE0EE5093FBC254BD813#B"
+            }
+        ]
+    }))
     const [idSelectedRule, selectRule] = useState(null)
 
     const dcc = tryParse(dccAsText)
@@ -84,27 +107,39 @@ const App = () => {
         <div className="separate-top">
             <span className="label">External parameters</span>
             {/*TODO  make a grid of external parameters, with validation clock (pre-populated with _now_) and addable/deletable other ones*/}
-            <div>
-                <span>{nowAsStr}</span>
+            <div className="table">
+                <div className="table-body">
+                    <div className="row header">
+                        <div className="cell identifier"><span>Name</span></div>
+                        <div className="cell"><span>Value</span></div>
+                    </div>
+                    <div className="row">
+                        <div className="cell"><span>validationClock</span></div>
+                        <div className="cell">{nowAsStr}</div>
+                    </div>
+                </div>
             </div>
             {/*TODO  pre-collapsed value sets JSON*/}
         </div>
         {dccIsJson
-            ? Object.entries(results).map(([ ruleSetId, ruleSet ]) =>
-                <div>
-                    <span className={ruleSet.allSatisfied ? "green" : "red"}>{ruleSetId}</span><span>:&nbsp;</span>
-                    {Object.entries(ruleSet.perRule).map(([ ruleId, result ]) =>
-                        <a
-                            className={result instanceof Error ? "orange" : (result ? "green" : "red")}
-                            onClick={(event) => { selectRule(ruleId) }}
-                            href="#rule"
-                        >{ruleId}&nbsp;</a>
-                    )}
-                </div>
-            )
+            ? <div className="separate-top">
+                <span className="label">Evaluation results, per set of rules of region</span>
+                {Object.entries(results).map(([ ruleSetId, ruleSet ]) =>
+                    <div>
+                        <span className={ruleSet.allSatisfied ? "green" : "red"}>{ruleSetId}</span><span>:&nbsp;</span>
+                        {Object.entries(ruleSet.perRule).map(([ ruleId, result ]) =>
+                            <a
+                                className={result instanceof Error ? "orange" : (result ? "green" : "red")}
+                                onClick={(event) => { selectRule(ruleId) }}
+                                href="#rule"
+                            >{ruleId}&nbsp;</a>
+                        )}
+                    </div>
+                )}
+                {idSelectedRule !== null && <Rule rule={selectedRule} result={results[ruleSetIdSelectedRule].perRule[idSelectedRule]} />}
+            </div>
             : <p className="error">The DCC text isn't parseable as JSON: {dcc.message}</p>
         }
-        {idSelectedRule !== null && <Rule rule={selectedRule} result={results[ruleSetIdSelectedRule][idSelectedRule]} />}
         <p>
             CertLogic has been developed by the <a href="https://ec.europa.eu/health/ehealth/policy/network_en">European Health Network</a> (eHN), as part of the <a href="https://ec.europa.eu/info/live-work-travel-eu/coronavirus-response/safe-covid-19-vaccines-europeans/eu-digital-covid-certificate_en">EU Digital COVID Certificate effort</a>.
         </p>
@@ -114,7 +149,7 @@ const App = () => {
 const Rule = ({ rule, result }) =>
     <div id="rule" className="separate-top">
         <span className="label">Rule</span>
-        <div className="table separate-top" id="rule">
+        <div className="table" id="rule">
             <div className="table-body">
                 <div className="row header">
                     <div className="cell identifier"><span>Field</span></div>
@@ -176,6 +211,15 @@ const Rule = ({ rule, result }) =>
                     <div className="cell"><span>Logic</span></div>
                     <div className="cell">
                         <pre className="logic">{JSON.stringify(rule.Logic, null, 2)}</pre>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="cell"><span>Result</span></div>
+                    <div className="cell">
+                        {result instanceof Error
+                            ? <span className="orange">{result.message}</span>
+                            : <span className={result === true ? "green" : "red"}>{"" + result}</span>
+                        }
                     </div>
                 </div>
             </div>
