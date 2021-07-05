@@ -11,13 +11,6 @@ main {
     margin: 2em;
 }
 
-.wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 1em;
-    row-gap: 2em;
-}
-
 h1 {
     font-size: 42px;
     text-align: center;
@@ -30,8 +23,8 @@ pre {
 
 textarea {
     padding: 0.5rem;
-    width: 60em;
-    height: 20em;
+    width: 100em;
+    height: 40em;
     display: block;
     vertical-align: top;
     resize: none;
@@ -43,6 +36,23 @@ span.label {
 }
 
 p {
-    width: 40em;
+    width: 70em;
+}
+
+p.error {
+    color: red;
+    font-weight: bolder;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.orange {
+    color: orange;
 }
 
