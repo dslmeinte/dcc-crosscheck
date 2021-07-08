@@ -32,7 +32,7 @@ const ReactiveTextArea = ({ id, value, setter }) =>
         value={value} />
 
 
-const ruleSets = require("./resources/all-rule-sets-with-tests.json")
+const ruleSets = require("./resources/all-rule-sets.json")
 const valueSets = require("./resources/valueSets.json")
 
 const mapValues = (map, mapper) => Object.fromEntries(
@@ -46,7 +46,7 @@ const computeResults = (payload, externals) => {
         ...externals
     }
     return mapValues(ruleSets, (_, ruleSet) => {
-        const perRule = mapValues(ruleSet, (_, rule) => evaluateSafe(rule.def.Logic, { payload, external }))
+        const perRule = mapValues(ruleSet, (_, rule) => evaluateSafe(rule.Logic, { payload, external }))
         return {
             perRule,
             allSatisfied: Object.values(perRule).reduce((acc, cur) => acc && !(cur instanceof Error) && cur, true)
@@ -88,7 +88,7 @@ const App = () => {
     const results = dccIsJson ? computeResults(dcc, { validationClock: nowAsStr }) : {}
 
     const ruleSetIdSelectedRule = idSelectedRule === null ? null : idSelectedRule.substring(3, 5)
-    const selectedRule = idSelectedRule === null ? null : ruleSets[ruleSetIdSelectedRule][idSelectedRule].def
+    const selectedRule = idSelectedRule === null ? null : ruleSets[ruleSetIdSelectedRule][idSelectedRule]
 
     return <main>
         <h1>DCC Crosscheck</h1>
