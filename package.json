@@ -2,7 +2,7 @@
   "name": "dcc-crosscheck",
   "version": "0.1.0",
   "dependencies": {
-    "certlogic-js": "^0.7.7",
+    "certlogic-js": "^0.8.2",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
     "react-scripts": "2.1.1"

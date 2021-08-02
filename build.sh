@@ -1,3 +1,4 @@
 RESOURCES_PATH=src/resources/
-cp ../dgc-business-rules-testdata/out/all-rule-sets.json $RESOURCES_PATH
-cp ../dgc-business-rules-testdata/valuesets/valueSets.json $RESOURCES_PATH
+STAGING_REPO=../dgc-business-rules-testdata
+cp $STAGING_REPO/out/all-rule-sets.json $RESOURCES_PATH
+cp $STAGING_REPO/valuesets/valueSets.json $RESOURCES_PATH
