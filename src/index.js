@@ -5,6 +5,9 @@ import {evaluate} from "certlogic-js"
 
 import "./styling.css"
 
+import { CompactExprRendering } from "certlogic-html"
+import "certlogic-html/dist/styling.css"
+
 
 const pretty = (json) => JSON.stringify(json, null, 2)
 
@@ -130,7 +133,7 @@ const App = () => {
                         {Object.entries(ruleSet.perRule).map(([ ruleId, result ]) =>
                             <a
                                 className={result instanceof Error ? "orange" : (result ? "green" : "red")}
-                                onClick={(event) => { selectRule(ruleId) }}
+                                onClick={(_) => { selectRule(ruleId) }}
                                 href="#rule"
                             >{ruleId}&nbsp;</a>
                         )}
@@ -211,6 +214,12 @@ const Rule = ({ rule, result }) =>
                     <div className="cell"><span>Logic</span></div>
                     <div className="cell">
                         <pre className="logic">{JSON.stringify(rule.Logic, null, 2)}</pre>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="cell"><span>Logic (compact)</span></div>
+                    <div className="cell">
+                        <CompactExprRendering expr={rule.Logic} />
                     </div>
                 </div>
                 <div className="row">
