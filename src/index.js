@@ -32,7 +32,7 @@ const App = () => {
     const ruleSetIdSelectedRule = idSelectedRule === null ? null : idSelectedRule.substring(3, 5)
     const selectedRule = idSelectedRule === null ? null : ruleSets[ruleSetIdSelectedRule][idSelectedRule]
 
-    return <main>
+    return <main id="top">
         <h1>DCC Crosscheck</h1>
         <p>
             Specify a DCC payload (as JSON) below, which will be evaluated against all rule sets contained in the <a href="https://github.com/eu-digital-green-certificates/dgc-business-rules-testdata" rel="noopener noreferrer" target="_blank">development/staging/pre-production GitHub repo</a>.

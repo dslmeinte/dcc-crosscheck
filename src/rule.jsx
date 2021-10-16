@@ -6,7 +6,7 @@ import {pretty} from "./json-util"
 
 export const Rule = ({ rule, result }) =>
     <div id="rule" className="separate-top">
-        <span className="label">Rule</span>
+        <span className="label">Rule</span> <span><a href="#top">(back to top)</a></span>
         <div className="table" id="rule">
             <div className="table-body">
                 <div className="row header">
@@ -88,4 +88,5 @@ export const Rule = ({ rule, result }) =>
                 </div>
             </div>
         </div>
+        <span><a href="#top">(Back to top)</a></span>
     </div>
