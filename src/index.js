@@ -1,31 +1,12 @@
 import React from "react"
 import {useState} from "react"
 import ReactDOM from "react-dom"
-import {evaluate} from "certlogic-js"
+
+import {evaluateRulesOnPayload} from "./evaluation-util"
+import {pretty, tryParse} from "./json-util"
+import {Rule} from "./rule"
 
 import "./styling.css"
-
-import { CompactExprRendering } from "certlogic-html"
-import "certlogic-html/dist/styling.css"
-
-
-const pretty = (json) => JSON.stringify(json, null, 2)
-
-const tryParse = (text) => {
-    try {
-        return JSON.parse(text)
-    } catch (e) {
-        return e
-    }
-}
-
-const evaluateSafe = (expr, data) => {
-    try {
-        return evaluate(expr, data)
-    } catch (e) {
-        return `Error occurred during evaluation: ${e.message}.`
-    }
-}
 
 
 const ReactiveTextArea = ({ id, value, setter }) =>
@@ -36,59 +17,17 @@ const ReactiveTextArea = ({ id, value, setter }) =>
 
 
 const ruleSets = require("./resources/all-rule-sets.json")
-const valueSets = require("./resources/valueSets.json")
-
-const mapValues = (map, mapper) => Object.fromEntries(
-    Object.entries(map)
-        .map(([ key, value]) => [ key, mapper(key, value) ])
-)
-
-const computeResults = (payload, externals) => {
-    const external = {
-        valueSets,
-        ...externals
-    }
-    return mapValues(ruleSets, (_, ruleSet) => {
-        const perRule = mapValues(ruleSet, (_, rule) => evaluateSafe(rule.Logic, { payload, external }))
-        return {
-            perRule,
-            allSatisfied: Object.values(perRule).reduce((acc, cur) => acc && !(cur instanceof Error) && cur, true)
-        }
-    })
-}
+const defaultDCC = require("./resources/default-dcc.json")
 
 const App = () => {
-    const [dccAsText, setDccAsText] = useState(pretty({
-        "ver": "1.3.0",
-        "nam": {
-            "fn": "Musterfrau-Gößinger",
-            "fnt": "MUSTERFRAU<GOESSINGER",
-            "gn": "Gabriele",
-            "gnt": "GABRIELE"
-        },
-        "dob": "1998-02-26",
-        "v": [
-            {
-                "tg": "840539006",
-                "vp": "1119349007",
-                "mp": "EU/1/20/1528",
-                "ma": "ORG-100030215",
-                "dn": 1,
-                "sd": 2,
-                "dt": "2021-02-18",
-                "co": "AT",
-                "is": "Ministry of Health, Austria",
-                "ci": "URN:UVCI:01:AT:10807843F94AEE0EE5093FBC254BD813#B"
-            }
-        ]
-    }))
+    const [dccAsText, setDccAsText] = useState(pretty(defaultDCC))
     const [idSelectedRule, selectRule] = useState(null)
 
     const dcc = tryParse(dccAsText)
     const dccIsJson = !(dcc instanceof Error)
 
     const nowAsStr = new Date().toISOString()
-    const results = dccIsJson ? computeResults(dcc, { validationClock: nowAsStr }) : {}
+    const results = dccIsJson ? evaluateRulesOnPayload(ruleSets, dcc, { validationClock: nowAsStr }) : {}
 
     const ruleSetIdSelectedRule = idSelectedRule === null ? null : idSelectedRule.substring(3, 5)
     const selectedRule = idSelectedRule === null ? null : ruleSets[ruleSetIdSelectedRule][idSelectedRule]
@@ -149,91 +88,6 @@ const App = () => {
     </main>
 }
 
-const Rule = ({ rule, result }) =>
-    <div id="rule" className="separate-top">
-        <span className="label">Rule</span>
-        <div className="table" id="rule">
-            <div className="table-body">
-                <div className="row header">
-                    <div className="cell identifier"><span>Field</span></div>
-                    <div className="cell"><span>Value</span></div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Identifier</span></div>
-                    <div className="cell">{rule.Identifier}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Type</span></div>
-                    <div className="cell">{rule.Type}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Country</span></div>
-                    <div className="cell">{rule.Country}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Version</span></div>
-                    <div className="cell">{rule.Version}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>SchemaVersion</span></div>
-                    <div className="cell">{rule.SchemaVersion}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Engine</span></div>
-                    <div className="cell">{rule.Engine}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>EngineVersion</span></div>
-                    <div className="cell">{rule.EngineVersion}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>CertificateType</span></div>
-                    <div className="cell">{rule.CertificateType}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Description</span></div>
-                    <div className="cell">{rule.Description.map(({lang, desc}) => <span
-                        className="description">[{lang}:] {desc}</span>)}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>ValidFrom</span></div>
-                    <div className="cell">{rule.ValidFrom}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>ValidTo</span></div>
-                    <div className="cell">{rule.ValidTo}</div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>AffectedFields</span></div>
-                    <div className="cell">
-                        <pre>{rule.AffectedFields.join(", ")}</pre>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Logic</span></div>
-                    <div className="cell">
-                        <pre className="logic">{JSON.stringify(rule.Logic, null, 2)}</pre>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Logic (compact)</span></div>
-                    <div className="cell">
-                        <CompactExprRendering expr={rule.Logic} />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="cell"><span>Result</span></div>
-                    <div className="cell">
-                        {result instanceof Error
-                            ? <span className="orange">{result.message}</span>
-                            : <span className={result === true ? "green" : "red"}>{"" + result}</span>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
 ReactDOM.render(<App />, document.getElementById('root'))
