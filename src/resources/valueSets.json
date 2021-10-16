@@ -353,11 +353,13 @@
   ],
   "vaccines-covid-19-auth-holders": [
     "Bharat-Biotech",
+    "Fiocruz",
     "Gamaleya-Research-Institute",
     "ORG-100001417",
     "ORG-100001699",
     "ORG-100001981",
     "ORG-100006270",
+    "ORG-100007893",
     "ORG-100010771",
     "ORG-100013793",
     "ORG-100020693",
@@ -374,6 +376,7 @@
     "Convidecia",
     "CoronaVac",
     "Covaxin",
+    "Covid-19-recombinant",
     "Covishield",
     "EU/1/20/1507",
     "EU/1/20/1525",
@@ -381,6 +384,7 @@
     "EU/1/21/1529",
     "EpiVacCorona",
     "Inactivated-SARS-CoV-2-Vero-Cell",
+    "R-COVI",
     "Sputnik-V"
   ],
   "sct-vaccines-covid-19": [
