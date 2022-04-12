@@ -5,7 +5,7 @@ const evaluateSafe = (expr, data) => {
     try {
         return evaluate(expr, data)
     } catch (e) {
-        return `Error occurred during evaluation: ${e.message}.`
+        return e
     }
 }
 
@@ -30,7 +30,10 @@ export const evaluateRulesOnPayload = (ruleSets, dcc, externals) => {
         const perRule = mapValues(ruleSet, (_, rule) => evaluateSafe(rule.Logic, data))
         return {
             perRule,
-            allSatisfied: Object.values(perRule).reduce((acc, cur) => acc && !(cur instanceof Error) && cur, true)
+            allSatisfied: Object.values(perRule).reduce(
+                (acc, cur) => acc && !(cur instanceof Error) && cur,
+                true
+            )
         }
     })
 }

@@ -81,7 +81,7 @@ export const Rule = ({ rule, result }) =>
                     <div className="cell"><span>Result</span></div>
                     <div className="cell">
                         {result instanceof Error
-                            ? <span className="orange">{result.message}</span>
+                            ? <><span className="orange">Error occurred during evaluation:</span> <span>"</span><span className="red">{result.message}</span><span>"</span></>
                             : <span className={result === true ? "green" : "red"}>{"" + result}</span>
                         }
                     </div>
